@@ -13,8 +13,6 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth,innerHeight);
 renderer.setClearColor(0x80a0e0);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 
 const orbitCamera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight);
@@ -36,50 +34,20 @@ const physics = new Physics();
 function setUpLights(){
     const sun = new THREE.DirectionalLight();
     sun.position.set(220,100,100);
-    sun.castShadow = true;
-    sun.shadow.camera.left = -200;
-    sun.shadow.camera.right = 200;
-    sun.shadow.camera.bottom = -200;
-    sun.shadow.camera.top = 200;
-    sun.shadow.camera.near = 5;
-    sun.shadow.camera.far = 350;
-    sun.shadow.bias = 0.0005;
-    sun.shadow.mapSize = new THREE.Vector2(1024,1024);
+    const sun2 = new THREE.DirectionalLight();
+    sun2.position.set(-220,-100,-100);
+    const sun3 = new THREE.DirectionalLight();
+    sun3.position.set(220,-100,-100);
+    const sun4 = new THREE.DirectionalLight();
+    sun4.position.set(-220,-100,100);
     scene.add(sun)
-
-    // const shadowHelper = new THREE.CameraHelper(sun.shadow.camera);
-    // scene.add(shadowHelper);
+    scene.add(sun2)
+    scene.add(sun3)
+    scene.add(sun4)
 
     const ambient = new THREE.AmbientLight();
-    ambient.intensity = 0.7;
+    ambient.intensity = 2;
     scene.add(ambient);
-}
-
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-const hoverInfoDiv = document.getElementById('info');
-
-window.addEventListener('mousemove', (event) => {
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-});
-
-function detectHover() {
-    raycaster.setFromCamera(mouse, orbitCamera);
-    const intersects = raycaster.intersectObjects(scene.children, true); 
-
-    if (intersects.length > 0) {
-        const hoveredObject = intersects[0].object;
-        const parentObject = hoveredObject.parent;
-
-        if (parentObject && parentObject.name !== 'land') {
-            hoverInfoDiv.innerHTML = `Object: ${hoveredObject.name}<br>Parent: ${parentObject.name}`;
-        } else {
-            hoverInfoDiv.innerHTML = ''; 
-        }
-    } else {
-        hoverInfoDiv.innerHTML = ''; 
-    }
 }
 
 let previousTime = performance.now();
@@ -93,8 +61,7 @@ function animate(){
     physics.update(player,world);
     renderer.render(scene, player.controls.isLocked ? player.camera:orbitCamera);
     stats.update();
-    detectHover();
-
+    
     previousTime = currentTime;
 }
 

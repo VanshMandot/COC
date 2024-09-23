@@ -33,7 +33,7 @@ export class World extends THREE.Group {
                 const row = [];
                 for(let z=0; z<this.size.width; z++){
                     row.push({
-                        id: (y===7)?1:2,
+                        id: (y<7)?3:(x<10 || x>this.size.width - 10 || z<10 || z>this.size.width - 10)?3:1,
                         instanceId: null
                     });
                 }
@@ -83,65 +83,29 @@ export class World extends THREE.Group {
     }
 
     loadModel() {
-        const loader = new GLTFLoader().setPath('/clash_of_clans_town_hall_10');
-        loader.load('/scene.gltf', (gltf) => {
+        const loader = new GLTFLoader().setPath('');
+        loader.load('/12.gltf', (gltf) => {
             const model = gltf.scene;
             
             model.position.set(this.size.width / 2, 8, this.size.width / 2);
-            model.scale.set(6,6,6)
+            model.scale.set(2,2,2)
             
             model.traverse((child) => {
                 if (child instanceof THREE.Mesh) {
-                    
-                    //to check which child
-                        if (child.parent.name.includes("wizardTower") || child.parent.name.includes("wall") || child.parent.name.includes("town")) {
-                            child.visible = true; 
-                            child.userData.isCollidable = true;  
- 
-                        console.log('Child Name:', child.name); 
-                        console.log('Child Object:', child);
-                        
-                        const position = child.getWorldPosition(new THREE.Vector3());
-                        console.log(`Child Position: X: ${position.x.toFixed(3)}, Z: ${position.z.toFixed(3)}`);
-                        } else {
-                            child.visible = false;  
-                        }
-                        
-                        
-                        child.castShadow = true;
-                        child.receiveShadow = true;
-                    }
+                    // if(child.parent.parent.parent.parent.name === 'Sketchfab_model_1'){
+                    //     child.visible = false;
+                    // }else {
+                        child.visible = true; 
+                        child.userData.isCollidable = true; 
+                        // if(!child.parent.parent.parent.parent.name.includes('wall')){
+                        // console.log(child.parent.parent.parent.parent.name);
+                        // }
+                    // }
+                }
                 });
             
                 this.add(model);
             });
-            
-            // const loader2 = new GLTFLoader().setPath('/WALL');
-            // const wallPositions = [
-                //     { position: new THREE.Vector3(108, 8, 130), scale: new THREE.Vector3(1, 1, 1) },
-                //     { position: new THREE.Vector3(112, 8, 130), scale: new THREE.Vector3(1, 1, 1) },
-        //     { position: new THREE.Vector3(116, 8, 130), scale: new THREE.Vector3(1, 1, 1) },
-        //     { position: new THREE.Vector3(89, 8, 130), scale: new THREE.Vector3(1, 1, 1) },
-        //     { position: new THREE.Vector3(85, 8, 130), scale: new THREE.Vector3(1, 1, 1) },
-        //     { position: new THREE.Vector3(81, 8, 130), scale: new THREE.Vector3(1, 1, 1) }
-        // ];
-
-        // wallPositions.forEach(({ position, scale }) => {
-        //     loader2.load('/scene.gltf', (gltf) => {
-        //         const model = gltf.scene;
-    
-        //         model.position.copy(position);
-        //         model.scale.copy(scale);
-        //         model.traverse((child) => {
-        //             if (child instanceof THREE.Mesh) {
-        //                 child.castShadow = true;
-        //                 child.receiveShadow = true;
-        //             }
-        //         });
-    
-        //         this.add(model);
-        //     });
-        // });
     }
 
     /**
